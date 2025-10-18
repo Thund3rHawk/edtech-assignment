@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid()) @map("_id")
+  email         String   @unique
+  password      String
+  name          String
+  avatar        String?
+  
+  refreshTokens RefreshToken[]
+  folders       Folder[]
+  notes         Note[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid()) @map("_id")
+  token     String   @unique
+  userId    String  @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Folder {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String
+  color     String   @default("#3b82f6")
+  icon      String?
+  
+  userId    String    @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  notes     Note[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Note {
+  id          String   @id @default(cuid()) @map("_id")
+  title       String
+  content     String
+  tags        String[] @default([])
+  
+  summary     String?  // AI generated
+  aiTitle     String?             // AI generated
+  
+  isPinned    Boolean  @default(false) @unique
+  isFavorite  Boolean  @default(false)
+  
+  folderId    String?   @unique
+  folder      Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  
+  userId      String  @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now()) @unique
+  updatedAt   DateTime @updatedAt
+}
