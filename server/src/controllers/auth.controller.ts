@@ -58,7 +58,7 @@ export const login = async (req: Request, res: Response) => {
     // const email = 'abc@gmail.com'
     // const password = '123456'
 
-    console.log("email: ", email, "password: ", password);
+    // console.log("email: ", email, "password: ", password);
     
 
     if (!email || !password) {
@@ -67,7 +67,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const user = await prisma.user.findUnique({ where: { email: email } });
-    console.log("user login creds: ",user);
+    // console.log("user login creds: ",user);
     
     if (!user) {
       console.log('from this function');
