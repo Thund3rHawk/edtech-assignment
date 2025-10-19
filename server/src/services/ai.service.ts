@@ -1,18 +1,31 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 import { config } from '../config/env';
 
-const genAI = new GoogleGenerativeAI(config.geminiApiKey);
-const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+const groq = new Groq({
+  apiKey: config.groqApiKey
+});
 
 export class AIService {
   // Summarize note content
   static async summarizeNote(content: string): Promise<string> {
     try {
-      const prompt = `Summarize the following note in 2-3 concise sentences. Keep it clear and informative:\n\n${content}`;
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text().trim();
+      const completion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful assistant that summarizes notes concisely.'
+          },
+          {
+            role: 'user',
+            content: `Summarize the following note in 2-3 concise sentences. Keep it clear and informative:\n\n${content}`
+          }
+        ],
+        model: 'llama-3.1-8b-instant', // Fast and free
+        temperature: 0.7,
+        max_tokens: 150,
+      });
+
+      return completion.choices[0]?.message?.content?.trim() || 'Summary not available';
     } catch (error) {
       console.error('AI Summarization error:', error);
       throw new Error('Failed to generate summary');
@@ -22,16 +35,28 @@ export class AIService {
   // Generate tags from content
   static async generateTags(content: string): Promise<string[]> {
     try {
-      const prompt = `Generate 3-5 relevant tags for the following note content. Return ONLY comma-separated tags without any additional text:\n\n${content}`;
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const tagsText = response.text().trim();
+      const completion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful assistant that generates relevant tags. Return ONLY comma-separated tags, no additional text.'
+          },
+          {
+            role: 'user',
+            content: `Generate 3-5 relevant tags for the following note content. Return ONLY comma-separated tags:\n\n${content}`
+          }
+        ],
+        model: 'llama-3.1-8b-instant',
+        temperature: 0.5,
+        max_tokens: 50,
+      });
+
+      const tagsText = completion.choices[0]?.message?.content?.trim() || '';
       
       return tagsText
         .split(',')
         .map(tag => tag.trim().toLowerCase())
-        .filter(tag => tag.length > 0)
+        .filter(tag => tag.length > 0 && tag.length < 30) // Filter out long strings
         .slice(0, 5);
     } catch (error) {
       console.error('AI Tag generation error:', error);
@@ -42,11 +67,24 @@ export class AIService {
   // Generate title from content
   static async generateTitle(content: string): Promise<string> {
     try {
-      const prompt = `Generate a concise, descriptive title (max 10 words) for this note. Return ONLY the title without quotes or additional text:\n\n${content.substring(0, 500)}`;
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text().trim().replace(/^["']|["']$/g, '');
+      const completion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful assistant that generates concise titles. Return ONLY the title, no quotes or additional text.'
+          },
+          {
+            role: 'user',
+            content: `Generate a concise, descriptive title (max 10 words) for this note. Return ONLY the title:\n\n${content.substring(0, 500)}`
+          }
+        ],
+        model: 'llama-3.1-8b-instant',
+        temperature: 0.7,
+        max_tokens: 30,
+      });
+
+      const title = completion.choices[0]?.message?.content?.trim() || 'Untitled Note';
+      return title.replace(/^["']|["']$/g, ''); // Remove quotes if present
     } catch (error) {
       console.error('AI Title generation error:', error);
       throw new Error('Failed to generate title');
@@ -60,11 +98,23 @@ export class AIService {
         .map(note => `Title: ${note.title}\n${note.content}`)
         .join('\n\n---\n\n');
       
-      const prompt = `Based on the following notes, answer this question: "${question}"\n\nNotes:\n${context}\n\nProvide a clear, helpful answer based on the notes.`;
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text().trim();
+      const completion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful assistant that answers questions based on provided notes. Be concise and accurate.'
+          },
+          {
+            role: 'user',
+            content: `Based on the following notes, answer this question: "${question}"\n\nNotes:\n${context}\n\nProvide a clear, helpful answer based on the notes.`
+          }
+        ],
+        model: 'llama-3.1-8b-instant',
+        temperature: 0.7,
+        max_tokens: 500,
+      });
+
+      return completion.choices[0]?.message?.content?.trim() || 'I could not generate an answer.';
     } catch (error) {
       console.error('AI Chat error:', error);
       throw new Error('Failed to process chat request');
@@ -78,11 +128,24 @@ export class AIService {
         .map((note, idx) => `[${idx}] ${note.title}: ${note.content.substring(0, 200)}`)
         .join('\n\n');
       
-      const prompt = `Given this search query: "${query}"\n\nFind the most relevant note indices from these notes (return only comma-separated numbers):\n\n${notesText}`;
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const indices = response.text().trim()
+      const completion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a search assistant. Return ONLY comma-separated numbers (indices) of the most relevant notes.'
+          },
+          {
+            role: 'user',
+            content: `Given this search query: "${query}"\n\nFind the most relevant note indices from these notes (return only comma-separated numbers):\n\n${notesText}`
+          }
+        ],
+        model: 'llama-3.1-8b-instant',
+        temperature: 0.3,
+        max_tokens: 50,
+      });
+
+      const responseText = completion.choices[0]?.message?.content?.trim() || '';
+      const indices = responseText
         .split(',')
         .map(idx => parseInt(idx.trim()))
         .filter(idx => !isNaN(idx) && idx >= 0 && idx < notes.length);
