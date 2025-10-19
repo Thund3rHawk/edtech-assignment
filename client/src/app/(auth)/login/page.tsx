@@ -22,8 +22,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      console.log("login creds are: ", email, password);
-      const data = await authService.login(email, password);
+      // console.log("login creds are: ", email, password);
+      await authService.login(email, password);
       // console.log(data);
       window.location.href = '/dashboard';
     } catch (err: any) {
