@@ -24,9 +24,7 @@ export default function LoginPage() {
     try {
       console.log("login creds are: ", email, password);
       const data = await authService.login(email, password);
-      console.log(data);
-      
-      // Force full page reload to ensure auth state is updated
+      // console.log(data);
       window.location.href = '/dashboard';
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');

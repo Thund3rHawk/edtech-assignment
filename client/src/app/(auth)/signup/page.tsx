@@ -30,7 +30,6 @@ export default function SignupPage() {
 
     try {
       await authService.signup(email, password, name);
-      // Force full page reload to ensure auth state is updated
       window.location.href = '/dashboard';
     } catch (err: any) {
       setError(err.response?.data?.message || 'Signup failed. Please try again.');
