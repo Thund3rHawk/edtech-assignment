@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
-import { AuthRequest } from '../types/index.js';
-import { verifyAccessToken } from '../utils/jwt.js';
+import { AuthRequest } from '../types/index';
+import { verifyAccessToken } from '../utils/jwt';
 
 export const authenticate = async (
   req: AuthRequest,

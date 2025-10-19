@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getNotes, getNote, createNote, updateNote, deleteNote, togglePin } from '../controllers/notes.controller.js';
-import { authenticate } from '../middleware/auth.js';
+import { getNotes, getNote, createNote, updateNote, deleteNote, togglePin } from '../controllers/notes.controller';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 

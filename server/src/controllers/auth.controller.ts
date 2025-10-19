@@ -4,7 +4,7 @@ import  prisma  from '../db/index';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt';
 import { AuthRequest } from '../types/index';
 
-export const signup = async (req: Request, res: Response): Promise<void> => {
+export const signup = async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
 
@@ -52,27 +52,36 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+    // const email = 'abc@gmail.com'
+    // const password = '123456'
+
+    console.log("email: ", email, "password: ", password);
+    
 
     if (!email || !password) {
       res.status(400).json({ message: 'Email and password are required' });
       return;
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { email: email } });
+    console.log("user login creds: ",user);
+    
     if (!user) {
-      res.status(401).json({ message: 'Invalid credentials' });
+      console.log('from this function');
+      
+      // res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
-
+    
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
+      console.log('from this function passnot valid');
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
-
     const tokenPayload = { userId: user.id, email: user.email };
     const accessToken = generateAccessToken(tokenPayload);
     const refreshToken = generateRefreshToken(tokenPayload);

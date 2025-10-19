@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getFolders, createFolder, updateFolder, deleteFolder } from '../controllers/folders.controller.js';
-import { authenticate } from '../middleware/auth.js';
+import { getFolders, createFolder, updateFolder, deleteFolder } from '../controllers/folders.controller';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 

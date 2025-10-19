@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { summarizeNote, generateTags, generateTitle, chatWithNotes, semanticSearch } from '../controllers/ai.controller.js';
-import { authenticate } from '../middleware/auth.js';
+import { summarizeNote, generateTags, generateTitle, chatWithNotes, semanticSearch } from '../controllers/ai.controller';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 

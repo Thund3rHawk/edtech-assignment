@@ -2,7 +2,7 @@ import { Response } from 'express';
 import  prisma  from '../db/index';
 import { AuthRequest } from '../types/index';
 
-export const getNotes = async (req: AuthRequest, res: Response): Promise<void> => {
+export const getNotes = async (req: AuthRequest, res: Response) => {
   try {
     const { folderId, search, pinned } = req.query;
 
