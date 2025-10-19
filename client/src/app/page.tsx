@@ -92,12 +92,12 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="container mx-auto px-6 py-8 mt-20 border-t border-gray-200 dark:border-gray-700">
         <div className="text-center text-gray-600 dark:text-gray-400">
-          <p>Built by Your Name</p>
+          <p>Built by Swadhin Paul</p>
           <div className="flex justify-center space-x-4 mt-2">
-            <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
+            <a href="https://github.com/thund3rhawk" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
               GitHub
             </a>
-            <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
+            <a href="https://linkedin.com/in/swadhin-paul-933663224" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
               LinkedIn
             </a>
           </div>

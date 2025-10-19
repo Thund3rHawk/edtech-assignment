@@ -4,9 +4,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export const api = axios.create({
   baseURL: 'http://localhost:8000/api',
-  // headers: {
-  //   'Content-Type': 'application/json',
-  // },
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // Request interceptor to add token
