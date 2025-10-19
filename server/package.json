@@ -8,6 +8,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --watch src --ext ts --exec ts-node ./src/index.ts",
+    "db:migrate": "NODE_PATH=dist/ node --env-file=.env dist/db/migration.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
